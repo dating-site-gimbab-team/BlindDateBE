@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  web-fe:
+    build: 
+      context: ./ndgb_blind_date_fe
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./ndgb_blind_date_fe:/app
+    networks:
+      - blind-date-web
+
+  blind-date-db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=test1234!!!
+      - MYSQL_DATABASE=blind_date
+      - TZ=Asia/Seoul
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    volumes:
+      - blind_date:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: on-failure
+    networks:
+      - blind-date-web
+
+  web-be:
+    build:
+      context: ./ndgb_blind_date_be
+      dockerfile: Dockerfile
+    ports:
+      - "1323:1323"
+    volumes:
+      - ./ndgb_blind_date_be:/app
+    networks:
+      - blind-date-web
+    depends_on:
+      - blind-date-db
+  
+  nginx:
+    image: nginx:1.25.3
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/sites:/etc/nginx/sites-available
+    container_name: nginx
+    depends_on:
+      - web-fe
+      - web-be
+    networks:
+      - blind-date-web
+
+volumes:
+  blind_date: { }
+
+networks:
+  blind-date-web:
+    driver: bridge
