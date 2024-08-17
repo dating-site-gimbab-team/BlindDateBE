@@ -7,16 +7,16 @@ import (
 	"gorm.io/gorm"
 
 	"ndgb_blind_date/models"
-	"ndgb_blind_date/services"
+	"ndgb_blind_date/services/user"
 )
 
 type UserController struct {
-	UserService *services.UserService
+	UserService *userServices.UserService
 }
 
 func NewUserController(db *gorm.DB) *UserController {
 	return &UserController{
-		UserService: services.NewUserService(db),
+		UserService: userServices.NewUserService(db),
 	}
 }
 
