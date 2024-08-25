@@ -1,6 +1,8 @@
 package userServices
 
 import (
+	"log"
+
 	"gorm.io/gorm"
 
 	"ndgb_blind_date/models"
@@ -14,8 +16,13 @@ func NewUserService(db *gorm.DB) *UserService {
 	return &UserService{DB: db}
 }
 
-func (s *UserService) CreateUser(user *models.User) error {
-	return s.DB.Create(user).Error
+func CreateUser(db *gorm.DB, user models.User) {
+	result := db.Create(&user) // 새로운 사용자 생성
+	if result.Error != nil {
+		log.Println("유저 생성 실패:", result.Error)
+	} else {
+		log.Println("유저 생성 성공:", user.ID)
+	}
 }
 
 func (s *UserService) GetUsers() ([]models.User, error) {

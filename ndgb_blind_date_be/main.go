@@ -25,7 +25,8 @@ func main() {
 	e.GET("/users", userController.GetUsers)
 
 	e.GET("/login", auth.HandleGoogleLogin)
-	e.GET("/api/auth/google", auth.HandleGoogleCallback)
-
+	e.GET("/api/auth/google", func(c echo.Context) error {
+		return auth.HandleGoogleCallback(c, db)
+	})
 	e.Logger.Fatal(e.Start(":1323"))
 }
