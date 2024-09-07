@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
@@ -12,6 +14,13 @@ import (
 func main() {
 
 	e := echo.New()
+
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins:     []string{"http://localhost:3000"},                  // 허용할 도메인들
+		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete}, // 허용할 메소드들
+		AllowHeaders:     []string{"Authorization", "Content-Type"},                                    // 허용할 헤더들
+		AllowCredentials: true,                                                                         // 인증 정보 포함 허용 (쿠키 등)
+	}))
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
