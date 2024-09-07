@@ -97,11 +97,9 @@ func HandleGoogleCallback(c echo.Context, db *gorm.DB) error {
 	// JWT 토큰 생성
 	auth_token, err := createJWT(user)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, "토큰 생성에 실패하였습니다.")
+			return c.String(http.StatusInternalServerError, "토큰 생성에 실패하였습니다.")
 	}
-
-	// JWT 토큰을 JSON으로 반환
-	return c.JSON(http.StatusOK, echo.Map{
-		"token": auth_token,
-	})
+	
+	// JWT 토큰을 리디렉션 URL에 포함하여 프론트엔드로 리디렉션
+	return c.Redirect(http.StatusTemporaryRedirect, "http://localhost:3000/callback?token="+auth_token)
 }
