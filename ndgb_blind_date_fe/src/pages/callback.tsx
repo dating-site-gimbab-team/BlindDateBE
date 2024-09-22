@@ -18,7 +18,7 @@ export default function Callback() {
         document.cookie = `token=${token}; path=/;`;
 
         // 인증된 사용자를 대시보드로 리다이렉트
-        router.push('/dashboard');
+        router.push('/');
       } else {
         console.error('토큰을 찾을 수 없습니다.');
       }

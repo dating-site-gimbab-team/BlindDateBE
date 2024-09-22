@@ -1,37 +1,104 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import jwt from 'jsonwebtoken';
+import Cookies from 'js-cookie';
+
+interface User {
+  name: string;
+  profileImage: string;
+}
+interface TokenPayload {
+  email: string;
+  exp: number;
+  picture_url: string;
+  user_id: number;
+}
 
 const HomePage: React.FC = () => {
   const router = useRouter();
 
-  const handleGoogleLogin = () => {
-    // Google OAuth2 로그인 엔드포인트로 리다이렉트
-    window.location.href = 'http://localhost:1323/login'; // 백엔드의 Google OAuth 로그인 엔드포인트
+  const [user, setUser] = useState<User | null>(null); // 수정된 부분
+
+  useEffect(() => {
+    const verifyToken = async () => {
+    const token = Cookies.get('token');
+    console.log(token)
+    if (token) {
+      try {
+          // 비밀 키를 Uint8Array로 변환해야 합니다
+          const secretKey = process.env.JWT_SECRET;
+            if (!secretKey) {
+              throw new Error('JWT_SECRET is not defined');
+            }
+            console.log(secretKey)
+        
+            // jwtVerify 함수는 Promise를 반환하므로 await 사용
+            const decoded = jwt.decode(token) as TokenPayload;
+        
+            console.log('Decoded payload:', decoded);
+        
+            // payload에서 필요한 정보를 사용
+            setUser({
+              name: decoded.email as string,
+              profileImage: decoded.picture_url as string,
+            });
+          } catch (error) {
+            console.error('Invalid token:', error);
+          }
+      }
+    }
+  verifyToken();
+  }, []);
+
+  const handleLogin = () => {
+    router.push('/login');
   };
 
   return (
-    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <div className="mx-auto h-10 w-auto">
+    <div className="min-h-screen bg-gray-100">
+      {/* 상단 네비게이션 바 */}
+      <header className="bg-white shadow">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <Image
+              src="/logo.png" // 로고 이미지 경로
+              alt="Logo"
+              width={50}
+              height={50}
+            />
+            <nav className="hidden md:flex space-x-4">
+              <a href="#" className="text-gray-700 hover:text-blue-500">커뮤니티</a>
+              <a href="#" className="text-gray-700 hover:text-blue-500">쇼핑</a>
+              <a href="#" className="text-gray-700 hover:text-blue-500">인테리어/생활</a>
+            </nav>
+          </div>
 
+          <div className="flex items-center space-x-4">
+            {user ? (
+              <div className="flex items-center space-x-2">
+                <Image
+                  src={user.profileImage} // 사용자 프로필 이미지 경로
+                  alt="Profile"
+                  width={40}
+                  height={40}
+                  className="rounded-full"
+                />
+                <div>
+                  <p className="text-gray-900 font-bold">{user.name}</p>
+                </div>
+              </div>
+            ) : (
+              <button onClick={handleLogin} className="bg-blue-500 text-white px-4 py-2 rounded">로그인</button>
+            )}
+          </div>
         </div>
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Sign in to your account
-        </h2>
-      </div>
+      </header>
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <div>
-          <button
-            type="submit"
-            className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            onClick={handleGoogleLogin}
-          >
-            Sign in
-          </button>
-        </div>
-      </div>
+      {/* 메인 콘텐츠 영역 */}
+      <main className="container mx-auto px-4 py-12">
+        
+      </main>
     </div>
   );
 };
