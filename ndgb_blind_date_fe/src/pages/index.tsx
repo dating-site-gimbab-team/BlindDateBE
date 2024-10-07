@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import Image from 'next/image';
-import jwt from 'jsonwebtoken';
-import Cookies from 'js-cookie';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import Image from "next/image";
+import jwt from "jsonwebtoken";
+import Cookies from "js-cookie";
 
 interface User {
   name: string;
@@ -22,37 +22,30 @@ const HomePage: React.FC = () => {
 
   useEffect(() => {
     const verifyToken = async () => {
-    const token = Cookies.get('token');
-    console.log(token)
-    if (token) {
-      try {
-          // 비밀 키를 Uint8Array로 변환해야 합니다
-          const secretKey = process.env.JWT_SECRET;
-            if (!secretKey) {
-              throw new Error('JWT_SECRET is not defined');
-            }
-            console.log(secretKey)
-        
-            // jwtVerify 함수는 Promise를 반환하므로 await 사용
-            const decoded = jwt.decode(token) as TokenPayload;
-        
-            console.log('Decoded payload:', decoded);
-        
-            // payload에서 필요한 정보를 사용
-            setUser({
-              name: decoded.email as string,
-              profileImage: decoded.picture_url as string,
-            });
-          } catch (error) {
-            console.error('Invalid token:', error);
-          }
+      const token = Cookies.get("token");
+      console.log(token);
+      if (token) {
+        try {
+          // jwtVerify 함수는 Promise를 반환하므로 await 사용
+          const decoded = jwt.decode(token) as TokenPayload;
+
+          console.log("Decoded payload:", decoded);
+
+          // payload에서 필요한 정보를 사용
+          setUser({
+            name: decoded.email as string,
+            profileImage: decoded.picture_url as string,
+          });
+        } catch (error) {
+          console.error("Invalid token:", error);
+        }
       }
-    }
-  verifyToken();
+    };
+    verifyToken();
   }, []);
 
   const handleLogin = () => {
-    router.push('/login');
+    router.push("/login");
   };
 
   return (
@@ -67,14 +60,17 @@ const HomePage: React.FC = () => {
               width={50}
               height={50}
             />
-            <nav className="hidden md:flex space-x-4">
-              <a href="#" className="text-gray-700 hover:text-blue-500">커뮤니티</a>
-              <a href="#" className="text-gray-700 hover:text-blue-500">쇼핑</a>
-              <a href="#" className="text-gray-700 hover:text-blue-500">인테리어/생활</a>
+            <nav className="hidden md:flex space-x-8">
+              <a href="#" className="text-gray-700 hover:text-blue-500">
+                커뮤니티
+              </a>
+              <a href="#" className="text-gray-700 hover:text-blue-500">
+                매칭
+              </a>
             </nav>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-8">
             {user ? (
               <div className="flex items-center space-x-2">
                 <Image
@@ -89,16 +85,19 @@ const HomePage: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <button onClick={handleLogin} className="bg-blue-500 text-white px-4 py-2 rounded">로그인</button>
+              <button
+                onClick={handleLogin}
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+              >
+                로그인
+              </button>
             )}
           </div>
         </div>
       </header>
 
       {/* 메인 콘텐츠 영역 */}
-      <main className="container mx-auto px-4 py-12">
-        
-      </main>
+      <main className="container mx-auto px-4 py-12"></main>
     </div>
   );
 };
