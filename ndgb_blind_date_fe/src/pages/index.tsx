@@ -1,105 +1,28 @@
-import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Image from "next/image";
-import jwt from "jsonwebtoken";
-import Cookies from "js-cookie";
+import TopNavBar from "../components/common/top_nav_bar"; // TopNavBar 컴포넌트 임포트
+import RecommendedSection from "@/components/ui/section/recommended_section";
+import PostCardSection from "@/components/ui/section/post_card_section";
+import useAuth from "@/hooks/auth/use_auth";
 
-interface User {
-  name: string;
-  profileImage: string;
-}
-interface TokenPayload {
-  email: string;
-  exp: number;
-  picture_url: string;
-  user_id: number;
-}
-
-const HomePage: React.FC = () => {
+const IndexPage: React.FC = () => {
   const router = useRouter();
-
-  const [user, setUser] = useState<User | null>(null); // 수정된 부분
-
-  useEffect(() => {
-    const verifyToken = async () => {
-      const token = Cookies.get("token");
-      console.log(token);
-      if (token) {
-        try {
-          // jwtVerify 함수는 Promise를 반환하므로 await 사용
-          const decoded = jwt.decode(token) as TokenPayload;
-
-          console.log("Decoded payload:", decoded);
-
-          // payload에서 필요한 정보를 사용
-          setUser({
-            name: decoded.email as string,
-            profileImage: decoded.picture_url as string,
-          });
-        } catch (error) {
-          console.error("Invalid token:", error);
-        }
-      }
-    };
-    verifyToken();
-  }, []);
+  const { user, setUser } = useAuth(); // 커스텀 훅 사용
 
   const handleLogin = () => {
     router.push("/login");
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* 상단 네비게이션 바 */}
-      <header className="bg-white shadow">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Image
-              src="/logo.png" // 로고 이미지 경로
-              alt="Logo"
-              width={50}
-              height={50}
-            />
-            <nav className="hidden md:flex space-x-8">
-              <a href="#" className="text-gray-700 hover:text-blue-500">
-                커뮤니티
-              </a>
-              <a href="#" className="text-gray-700 hover:text-blue-500">
-                매칭
-              </a>
-            </nav>
-          </div>
-
-          <div className="flex items-center space-x-8">
-            {user ? (
-              <div className="flex items-center space-x-2">
-                <Image
-                  src={user.profileImage} // 사용자 프로필 이미지 경로
-                  alt="Profile"
-                  width={40}
-                  height={40}
-                  className="rounded-full"
-                />
-                <div>
-                  <p className="text-gray-900 font-bold">{user.name}</p>
-                </div>
-              </div>
-            ) : (
-              <button
-                onClick={handleLogin}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
-              >
-                로그인
-              </button>
-            )}
-          </div>
-        </div>
-      </header>
-
+    <>
+      {/* 상단 네브바 컴포넌트 사용 */}
+      <TopNavBar user={user} handleLogin={handleLogin} />{" "}
       {/* 메인 콘텐츠 영역 */}
-      <main className="container mx-auto px-4 py-12"></main>
-    </div>
+      <main className="container mx-auto px-4 py-12">
+        <RecommendedSection /> {/* 추천 상품 섹션 사용 */}
+        <PostCardSection /> {/* 커뮤니티 섹션 사용 */}
+      </main>
+    </>
   );
 };
 
-export default HomePage;
+export default IndexPage;
