@@ -1,5 +1,11 @@
 import PostCard from "../card/post_card";
 
+interface User {
+  name: string;
+  age: string;
+  imageUrl: string;
+}
+
 const PostCardSection: React.FC = () => {
   return (
     <section>

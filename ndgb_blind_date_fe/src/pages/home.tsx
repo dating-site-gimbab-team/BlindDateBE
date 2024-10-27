@@ -30,7 +30,7 @@ export default function Dashboard() {
       <TopNavBar user={user} handleLogin={handleLogin} />{" "}
       {/* 메인 콘텐츠 영역 */}
       <main className="container mx-auto px-4 py-12">
-        <RecommendedSection /> {/* 추천 상품 섹션 사용 */}
+        <RecommendedSection /> {/* 추천 섹션 사용 */}
         <PostCardSection /> {/* 커뮤니티 섹션 사용 */}
       </main>
     </div>

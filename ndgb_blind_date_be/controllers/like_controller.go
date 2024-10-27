@@ -23,7 +23,7 @@ func NewLikeController(db *gorm.DB) *LikeController {
 
 func (lc *LikeController) AddLike(c echo.Context) error {
 	fromUserID, _ := strconv.ParseUint(c.Param("from_user_id"), 10, 64)
-	toUserID, _ := strconv.ParseUint(c.Param("to_user_id"), 10, 64)
+	toProfileID, _ := strconv.ParseUint(c.Param("to_profile_id"), 10, 64)
 
 	var likeReq struct {
 		IsLike bool `json:"is_like"`
@@ -32,7 +32,7 @@ func (lc *LikeController) AddLike(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid request"})
 	}
 
-	like, err := lc.LikeService.AddLike(uint(fromUserID), uint(toUserID), likeReq.IsLike)
+	like, err := lc.LikeService.AddLike(uint(fromUserID), uint(toProfileID), likeReq.IsLike)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Could not add like/dislike"})
 	}
@@ -42,9 +42,9 @@ func (lc *LikeController) AddLike(c echo.Context) error {
 
 func (lc *LikeController) GetLikeStatus(c echo.Context) error {
 	fromUserID, _ := strconv.ParseUint(c.Param("from_user_id"), 10, 64)
-	toUserID, _ := strconv.ParseUint(c.Param("to_user_id"), 10, 64)
+	toProfileID, _ := strconv.ParseUint(c.Param("to_profile_id"), 10, 64)
 
-	like, err := lc.LikeService.GetLikeStatus(uint(fromUserID), uint(toUserID))
+	like, err := lc.LikeService.GetLikeStatus(uint(fromUserID), uint(toProfileID))
 	if err != nil {
 		return c.JSON(http.StatusOK, map[string]interface{}{"status": "none"})
 	}
