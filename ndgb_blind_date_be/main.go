@@ -9,6 +9,7 @@ import (
 	"ndgb_blind_date/config"
 	"ndgb_blind_date/controllers"
 	"ndgb_blind_date/services/auth"
+	likeServices "ndgb_blind_date/services/like"
 )
 
 func main() {
@@ -37,5 +38,12 @@ func main() {
 	e.GET("/api/auth/google", func(c echo.Context) error {
 		return auth.HandleGoogleCallback(c, db)
 	})
+
+
+	likeController := controllers.NewLikeController(db)
+	e.POST("/users/:from_user_id/like/:to_user_id", likeController.AddLike)
+	e.GET("/users/:from_user_id/like/:to_user_id", likeController.GetLikeStatus)
+
+
 	e.Logger.Fatal(e.Start(":1323"))
 }
